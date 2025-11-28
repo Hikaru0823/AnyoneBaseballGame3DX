@@ -24,7 +24,7 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
     readonly List<SessionItemUI> sessionItems = new List<SessionItemUI>();
 
 
-    public NetworkRunner Runner { get; private set; }
+    public new NetworkRunner  Runner { get; private set; }
 
     async void Awake()
     {
@@ -186,6 +186,7 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
     {
         if (Runner) Runner.Shutdown();
         Runner = Instantiate(runnerPrefab);
+        Runner.AddCallbacks(this);
 
         Loading.Instance.SetVisible(true);
         Task<StartGameResult> task = Runner.StartGame(new StartGameArgs()
@@ -260,6 +261,7 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     { 
         Debug.Log($"LobbyManager.OnDisconnectedFromServer: {reason}");
+        DisconnectUI.OnDisconnectedFromServer(reason);
     }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
@@ -298,6 +300,7 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"Player Left: {player.IsMasterClient}");
     }
 
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)

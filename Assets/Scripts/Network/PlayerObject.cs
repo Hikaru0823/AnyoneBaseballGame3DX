@@ -83,7 +83,7 @@ public class PlayerObject : NetworkBehaviour
 
 		PlayerRegistry.PlayerJoined(Object.InputAuthority);
 
-		if (!GameManager.IsOnline)
+		if (GameManager.Instance != null && !GameManager.IsOnline)
 		{
 			Index = 0;
 			TeamIndex = 0;

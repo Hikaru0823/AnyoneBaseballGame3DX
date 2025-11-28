@@ -50,6 +50,16 @@ public class DisconnectUI : MonoBehaviour
 		Cursor.lockState = CursorLockMode.None;
 	}
 
+	public static void OnDisconnectedFromServer(NetDisconnectReason reason)
+	{
+		(string status, string message) = DisconnectReasonToHuman(reason);
+		Instance.disconnectStatus.text = status;
+		Instance.disconnectMessage.text = message;
+
+		Instance.ui.SetActive(true);
+		Cursor.lockState = CursorLockMode.None;
+	}
+
 	private static (string, string) ShutdownReasonToHuman(ShutdownReason reason)
 	{
 		switch (reason)
@@ -110,6 +120,26 @@ public class DisconnectUI : MonoBehaviour
 				return ("接続拒否", "セッションが現在ゲーム中の可能性があります");
 			case NetConnectFailedReason.ServerFull:
 				return ("サーバー満員", "");
+			default:
+				Debug.LogWarning($"不明なNetConnectFailedReason {reason}");
+				return ("不明な接続失敗", $"{(int)reason}");
+		}
+	}
+
+	private static (string,string) DisconnectReasonToHuman(NetDisconnectReason reason)
+	{
+		switch (reason)
+		{
+			case NetDisconnectReason.Timeout:
+				return ("タイムアウト", "");
+			case NetDisconnectReason.Requested:
+				return ("切断要求", "");
+			case NetDisconnectReason.SequenceOutOfBounds:
+				return ("サーバー満員", "");
+			case NetDisconnectReason.SendWindowFull:
+				return ("送信ウィンドウ満杯", "");
+			case NetDisconnectReason.ByRemote:
+				return ("リモートによる切断", "");
 			default:
 				Debug.LogWarning($"不明なNetConnectFailedReason {reason}");
 				return ("不明な接続失敗", $"{(int)reason}");

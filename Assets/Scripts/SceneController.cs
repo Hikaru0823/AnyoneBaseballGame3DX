@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,6 +11,10 @@ public class SceneController : MonoBehaviour
     [SerializeField] private Toggle infToggle;
     void Start()
     {
+        if(FindFirstObjectByType<NetworkRunner>() != null)
+        {
+            FindFirstObjectByType<NetworkRunner>().Shutdown();
+        }
         titleIconAnim.Play(ResourcesManager.PANEL_IN);
         infToggle.isOn = ES3.Load<bool>(SaveKeys.IsINF, false);
     }
