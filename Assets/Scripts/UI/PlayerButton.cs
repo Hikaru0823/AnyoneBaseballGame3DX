@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,14 +12,17 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] private Image[] stateImages;
     [SerializeField] private Image bgImage;
     [SerializeField] private CanvasGroup group;
+    [SerializeField] private PlayerButtonDragger dragger;
+    [SerializeField] private PlayerButtonScaler scaler;
     public static PlayerButton Instance { get; private set; }
+
 	private void Awake()
 	{
 		if (Instance != null)
 		{
 			Destroy(gameObject);
 			return;
-		}
+		}   
 
 		Instance = this;
 	}
@@ -29,12 +33,15 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         //     NetworkGameManager.Instance.isInput = true;
         // else
         //     GameManager.Instance.OnInput();
+
+        if(dragger.isDragging || scaler.isDragging) return;
         OnInput();
         buttonAnim.Play("MouseIn");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if(dragger.isDragging || scaler.isDragging) return;
         buttonAnim.Play("MouseOut");
     }
 
@@ -69,4 +76,10 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                 break;
         }
     }
+
+    void OnDisable()
+    {
+        
+    }
+
 }

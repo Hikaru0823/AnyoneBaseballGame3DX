@@ -73,7 +73,7 @@ public class IntervalUI : MonoBehaviour
         SEManager.Instance.Play(SEPath.ADD_POINT);
         yield return new WaitForSeconds(1f);
         animator.Play("Result");
-        if(ES3.Load<bool>(SaveKeys.IsINF, false))
+        if(ES3.Load<bool>(SaveKeys.IsINF, defaultValue:false))
         {
             for (int i = 0; i < 5; i++)
             {

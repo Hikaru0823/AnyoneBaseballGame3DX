@@ -44,7 +44,7 @@ public class NetBaseballBat : PlayerController
 
     public override void Spawned()
     {
-        isNormal = ResourcesManager.Instance.CurrentMode == GameManager.EMode.Normal;
+        isNormal = ResourcesManager.Instance.CurrentMode == GameManager.EMode.Normal || ResourcesManager.Instance.CurrentMode == GameManager.EMode.Universal || ResourcesManager.Instance.CurrentMode == GameManager.EMode.Online_Universal;
         isMoveArrow = ResourcesManager.Instance.CurrentMode == GameManager.EMode.Evaluation;
         isMove = ResourcesManager.Instance.CurrentMode == GameManager.EMode.BarrierFree || ResourcesManager.Instance.CurrentMode == GameManager.EMode.Online_BarrierFree;
         arrow = ResourcesManager.Instance.Arrow.transform;

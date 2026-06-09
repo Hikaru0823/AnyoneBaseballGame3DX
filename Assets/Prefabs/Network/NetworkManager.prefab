@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6639738198096775075}
   - component: {fileID: 7896300424764350182}
-  - component: {fileID: 1530208807081796182}
   - component: {fileID: 4413905875929730594}
   - component: {fileID: -6593068280311839439}
+  - component: {fileID: 1530208807081796182}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -47,6 +47,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec71f49a00bbd4d40842aef2fa3981a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4413905875929730594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2617254266008109419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c148023b04d9743a51ede840a118dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameState: {fileID: -6593068280311839439}
+  _IsTopInning: 1
+  _CurrentBoxCount: 1
+  _CurrentOutCount: 0
+  _CurrentWhitePoints: 0
+  _CurrentRedPoints: 0
+  _TotalWhitePoints: 0
+  _TotalRedPoints: 0
+  _CurrentWhiteBatterCount: -1
+  _CurrentRedBatterCount: -1
+  netBall: {fileID: 0}
+  currentUniBoard: {fileID: 0}
+--- !u!114 &-6593068280311839439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2617254266008109419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd6c1661bde0b44e93b964bf6a3343d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Previous: 0
+  _Current: 0
 --- !u!114 &1530208807081796182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,40 +106,3 @@ MonoBehaviour:
   - {fileID: 4413905875929730594}
   - {fileID: -6593068280311839439}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &4413905875929730594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2617254266008109419}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66c148023b04d9743a51ede840a118dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _gameState: {fileID: -6593068280311839439}
-  _CurrentBatter: {fileID: 0}
-  _IsTopInning: 1
-  _CurrentBoxCount: 1
-  _CurrentOutCount: 0
-  _CurrentWhitePoints: 0
-  _CurrentRedPoints: 0
-  _TotalWhitePoints: 0
-  _TotalRedPoints: 0
-  _CurrentWhiteBatterCount: -1
-  _CurrentRedBatterCount: -1
---- !u!114 &-6593068280311839439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2617254266008109419}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cd6c1661bde0b44e93b964bf6a3343d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Previous: 0
-  _Current: 0

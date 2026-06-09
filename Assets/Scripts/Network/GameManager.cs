@@ -5,9 +5,6 @@ using System.Linq;
 using Fusion;
 using Fusion.Addons.Physics;
 using Fusion.Sockets;
-using KanKikuchi.AudioManager;
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -18,7 +15,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : NetworkBehaviour, INetworkRunnerCallbacks
 {
-    public enum EMode {BarrierFree, Normal, Duo, Online_BarrierFree, Evaluation, Derby}
+    public enum EMode {BarrierFree, Normal, Duo, Online_BarrierFree, Evaluation, Derby, Universal, Online_Universal }
     public enum EJudge { HomeRun, BH3, BH2, Hit, Faul, Out, Strike, Ball, PlayerLeft, None }
     public static GameState State => Instance._gameState;
 	[SerializeField] private GameState _gameState;
@@ -56,10 +53,14 @@ public class GameManager : NetworkBehaviour, INetworkRunnerCallbacks
         { EMode.Duo, new Vector3(0, -3.25f, 10.3f) },
         { EMode.Online_BarrierFree, new Vector3(0, -3.25f, 10.3f) },
         { EMode.Evaluation, new Vector3(0, -3.25f, 10.3f) },
-        { EMode.Derby, new Vector3(0, -3.25f, 7f) }
+        { EMode.Derby, new Vector3(0, -3.25f, 7f) },
+        { EMode.Universal, new Vector3(0, -3.25f, 7f)},
+        { EMode.Online_Universal, new Vector3(0, -3.25f, 7f)}
+    
     };
 
     public NetBall netBall;
+    public NetBoard currentUniBoard;
 
     public override void Spawned()
     {
@@ -78,7 +79,19 @@ public class GameManager : NetworkBehaviour, INetworkRunnerCallbacks
             netBall.Despawn();
             netBall = null;
         }
-        netBall = Instance.Runner.Spawn(ResourcesManager.Instance.netBallPrefab, BallPosByMode[ResourcesManager.Instance.CurrentMode]);
+        if(currentUniBoard != null)
+        {
+            currentUniBoard.Despawn();
+            currentUniBoard = null;
+        }
+
+        if(ResourcesManager.Instance.CurrentMode == GameManager.EMode.Universal || ResourcesManager.Instance.CurrentMode == GameManager.EMode.Online_Universal)
+        {
+            currentUniBoard = Runner.Spawn(ResourcesManager.Instance.netBoardPrefab, new Vector3(0.03f, -4.188f, 10.28f), Quaternion.identity);
+            netBall = currentUniBoard.netBall;
+        }
+        else
+            netBall = Instance.Runner.Spawn(ResourcesManager.Instance.netBallPrefab, BallPosByMode[ResourcesManager.Instance.CurrentMode]);
 
         IsTopInning = GameManager.IsOnline ? CurrentBoxCount % 2 == 1 : true;
 
@@ -283,6 +296,8 @@ public class GameManager : NetworkBehaviour, INetworkRunnerCallbacks
             }
             CurrentBatter = default;
         }
+
+        InterfaceManager.Instance.vsPanel.OnPlayerLeft(player);
     }
 
     /// <summary>

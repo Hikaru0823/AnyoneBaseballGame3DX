@@ -16,7 +16,7 @@ public class SceneController : MonoBehaviour
             FindFirstObjectByType<NetworkRunner>().Shutdown();
         }
         titleIconAnim.Play(ResourcesManager.PANEL_IN);
-        infToggle.isOn = ES3.Load<bool>(SaveKeys.IsINF, false);
+        infToggle.isOn = ES3.Load<bool>(SaveKeys.IsINF, defaultValue:false);
     }
 
     public void OnStartButtonPushed(int sceneIndex)

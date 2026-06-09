@@ -11,4 +11,6 @@ public class SaveKeys : MonoBehaviour
     public static readonly string ImageByte = "ImageByte";
     public static readonly string IsINF = "IsINF";
     public static readonly string Binding = "Binding";
+    public static readonly string PlayerButtonPositionLocal = "PlayerButtonPositionLocal";
+    public static readonly string PlayerButtonScaleLocal = "PlayerButtonScaleLocal";
 }

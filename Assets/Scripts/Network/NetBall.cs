@@ -1,4 +1,5 @@
 using System;
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using Fusion.Addons.Physics;
 using KanKikuchi.AudioManager;
@@ -28,6 +29,7 @@ public class NetBall : NetworkBehaviour
 
     public override void Spawned()
     {
+        GetComponent<TrailRenderer>().enabled = false;
         GameCameraController.Instance.SetTraceCamera(transform);
         switch (ResourcesManager.Instance.CurrentMode)
         {
@@ -48,6 +50,12 @@ public class NetBall : NetworkBehaviour
             case GameManager.EMode.Evaluation:
                 break;
             case GameManager.EMode.Online_BarrierFree:
+                break;
+            case GameManager.EMode.Universal:
+                // center = ResourcesManager.Instance.universalManager.transform.GetChild(0).position + Vector3.up * 7.6f;
+                // rigidbody.isKinematic = true;
+                // isRotate = true;
+                // rigidbody.useGravity = false;
                 break;
             default:
                 break;
@@ -127,9 +135,11 @@ public class NetBall : NetworkBehaviour
     void OnCollisionEnter(Collision collision)
     {
         if (!GameManager.Instance.Runner.IsServer) return;
-        RPC_HitEvent();
+        RPC_CollisionEvent();
         if (!isActive && collision.gameObject.tag == "BaseBallBat")
         {
+            RPC_HitEvent();
+            transform.parent = null;
             isActive = true;
             // if(false)
             // {    
@@ -252,9 +262,15 @@ public class NetBall : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_HitEvent()
+    public void RPC_CollisionEvent()
     {
         SEManager.Instance.Play(SEPath.HIT_BALL);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HitEvent()
+    {
+        GetComponent<TrailRenderer>().enabled = true;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

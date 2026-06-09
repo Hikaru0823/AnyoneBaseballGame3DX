@@ -66,6 +66,12 @@ public class PlayerRegistry : NetworkBehaviour, INetworkRunnerCallbacks
 			}
 		}
 
+		if(indices.Length == 1 && indices[0] > 0)
+		{
+			index = 0;
+			return true;
+		}
+
 		index = (byte)(indices[indices.Length - 1] + 1);
 		return true;
 	}
@@ -83,7 +89,13 @@ public class PlayerRegistry : NetworkBehaviour, INetworkRunnerCallbacks
 			return false;
 		}
 
-		byte[] indices = ObjectByRef.Where(kvp => kvp.Value.IsWhite == isWhite).OrderBy(kvp => kvp.Value.TeamIndex).Select(kvp => kvp.Value.TeamIndex).ToArray();
+		byte[] indices = ObjectByRef.Where(kvp => kvp.Value.IsWhite == isWhite && kvp.Value.TeamIndex != 255).OrderBy(kvp => kvp.Value.TeamIndex).Select(kvp => kvp.Value.TeamIndex).ToArray();
+
+		if(indices.Length == 1 && indices[0] > 0 || indices.Length == 0)
+		{
+			index = 0;
+			return true;
+		}
 
 		for (int i = 0; i < indices.Length - 1; i++)
 		{
@@ -93,7 +105,7 @@ public class PlayerRegistry : NetworkBehaviour, INetworkRunnerCallbacks
 				return true;
 			}
 		}
-        Debug.Log($"GetAvailableOfTeam: {isWhite} - Last index: {indices[indices.Length - 1]}");
+
 
 		index = (byte)(indices[indices.Length - 1] + 1);
 		return true;

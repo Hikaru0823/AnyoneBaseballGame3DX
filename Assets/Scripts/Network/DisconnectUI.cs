@@ -93,7 +93,7 @@ public class DisconnectUI : MonoBehaviour
 			case ShutdownReason.AuthenticationTicketExpired:
 				return ("認証期限切れ", "認証チケットの有効期限が切れました");
 			case ShutdownReason.PhotonCloudTimeout:
-				return ("クラウドタイムアウト", "Photon Cloudとの接続がタイムアウトしました");
+				return ("切断", "ホストとの接続が切断されました");
 			case ShutdownReason.AlreadyRunning:
 				return ("既に実行中", "接続が既に実行されています");
 			case ShutdownReason.InvalidArguments:

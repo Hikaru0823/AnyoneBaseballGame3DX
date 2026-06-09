@@ -140,24 +140,6 @@ public class ImageLoader : MonoBehaviour
         //buttonImage.texture = texture;
     }
 
-    public void OnVisible(bool isVisible)
-    {
-        ExitManager exitManger = ExitManager.Instance;
-        if (isVisible)
-        {
-            animator.Play(panelFadeIn);
-            exitManger.SetReturnButtonVisible(true);
-            exitManger.returnButton.onClick.RemoveAllListeners();
-            exitManger.returnButton.onClick.AddListener(() => OnVisible(false));
-        }
-        else
-        {
-            animator.Play(panelFadeOut);
-            exitManger.SetReturnButtonVisible(false);
-            exitManger.returnButton.onClick.RemoveAllListeners();
-        }
-    }
-
     // テクスチャをリサイズする関数
     private Texture2D ResizeTexture(Texture2D source, int width, int height)
     {

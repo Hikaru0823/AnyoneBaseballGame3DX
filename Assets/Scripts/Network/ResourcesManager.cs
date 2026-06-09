@@ -9,6 +9,7 @@ public class ResourcesManager : MonoBehaviour
     [Header("GameParams")]
     public int MaxBoxCount = 2;
     public int MaxBoxCountSingle = 2;
+    public int MaxPlayerCount = 8;
     public Dictionary<string, Texture2D> CharacterTextureByName { get; private set; } = new();
 
     [Header("PlayerParams")]
@@ -30,6 +31,7 @@ public class ResourcesManager : MonoBehaviour
     public MeshRenderer stageRenderer;
 
     [Header("Prefabs")]
+    public NetBoard netBoardPrefab;
     public PlayerSessionItemUI playerSessionItemUI;
     public NetBaseballBat netBaseballBatPrefab;
     public NetBall netBallPrefab;

@@ -32,7 +32,7 @@ public class GameState : NetworkBehaviour
 		{
 			if (Runner.IsServer)
 			{
-				if (PlayerRegistry.Players.Count() == 0)
+				if (PlayerRegistry.Players.Count() < 1)
 					return;
 				if (PlayerRegistry.All(p => p.IsReady))
 				{
@@ -54,10 +54,10 @@ public class GameState : NetworkBehaviour
 			if (GameManager.IsOnline)
 			{
 				InterfaceManager.Instance.intervalUI.InitBoxPanel(ResourcesManager.Instance.MaxBoxCount / 2);
+				InterfaceManager.Instance.vsPanel.SetItems();
 			}
 			else
 			{
-				ExitManager.Instance.returnButtonAnimation.Play(ResourcesManager.PANEL_IN);
 				InterfaceManager.Instance.intervalUI.InitBoxPanel(ResourcesManager.Instance.MaxBoxCountSingle);
 				InterfaceManager.Instance.intervalUI.SetName(ResourcesManager.Instance.userName);
 				InterfaceManager.Instance.vsPanel.SetSingleState(ResourcesManager.Instance.userName);
@@ -67,6 +67,7 @@ public class GameState : NetworkBehaviour
 
 		StateMachine[EGameState.Intro_View].onEnter = prev =>
 		{
+			LobbyManager.Instance.CurrentState = LobbyManager.State.InGame;
 			introViewCoroutine = StartCoroutine(InterfaceManager.Instance.StartIntroViewRoutine());
 		};
 

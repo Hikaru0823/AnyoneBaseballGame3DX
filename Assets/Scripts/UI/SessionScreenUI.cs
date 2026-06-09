@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Helpers.Linq;
 using System.Security.Cryptography;
+using EyeMoT.Fusion;
 
 /// <summary>
 /// セッション画面のUI管理クラス
@@ -99,7 +100,7 @@ public class SessionScreenUI : MonoBehaviour
             }, true);
 
         // セッション名をUIに反映
-        sessionNameText.text = GameManager.Instance.Runner.SessionInfo.Name;
+        sessionNameText.text = SessionCodeUtility.ParseSessionName(GameManager.Instance.Runner.SessionInfo.Name).ToString();
 
         isUpdatingSession = false;
     }
@@ -110,6 +111,7 @@ public class SessionScreenUI : MonoBehaviour
     /// <param name="player">参加したプレイヤー</param>
     public void PlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        //spectatorCountText.text = PlayerRegistry.Where(p => p.IsSpectator == true, true).Count().ToString();
         CreatePlayerItem(player);
     }
 

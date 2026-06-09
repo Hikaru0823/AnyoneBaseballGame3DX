@@ -7,68 +7,33 @@ public class ExitManager : Singleton<ExitManager>
 {
     [Header("Resouces")]
     public Button exitButton;
-    public Button returnButton;
-    public Animator returnButtonAnimation;
-    public Animator returnPanelAnimation;
-    public Animator exitPanelAnimation;
-
-    private Vector3 initPos;
-    string panelFadeIn = "Panel In";
-    string panelFadeOut = "Panel Out";
 
     void Start()
     {
-        initPos = returnButton.transform.GetComponent<RectTransform>().localPosition;
-        SceneManager.activeSceneChanged += OnSceneLoades;
+        #if UNITY_WEBGL
+        exitButton.gameObject.SetActive(false);
+        #endif
     }
 
-    public void SetReturnButtonVisible(bool isVisible)
+    public void OnReturnButtonClicked()
     {
-        if (isVisible)
-            returnButtonAnimation.Play(panelFadeIn);
-        else
-            returnButtonAnimation.Play(panelFadeOut);
-    }
-
-    public void SetLeftPos()
-    {
-        returnButton.GetComponent<RectTransform>().localPosition = initPos + Vector3.left * 300;
-    }
-
-    public void SetInitPos()
-    {
-        returnButton.GetComponent<RectTransform>().localPosition = initPos;
-    }
-
-    public void OnSceneLoades(Scene preScene, Scene nextScene)
-    {
-        returnButton.onClick.RemoveAllListeners();
-        if (nextScene.buildIndex == 0)
+        if (InGame)
         {
-            returnButtonAnimation.Play(panelFadeOut);
-        }
-        else if (nextScene.buildIndex == 1)
-        {
-            returnButtonAnimation.Play(panelFadeIn);
-            SetLeftPos();
-            returnButton.onClick.AddListener(() =>
+            PopupUI.OnVisible("タイトルに戻りますか？", "ゲームへの途中参加は出来ません。", onClose: () =>
             {
-                if (FindFirstObjectByType<NetworkRunner>().GameMode != GameMode.Single)
-                {
-                    returnPanelAnimation.Play(panelFadeIn);
-                }
-                else
-                {
-                    FindFirstObjectByType<NetworkRunner>().Shutdown();
-                    SceneManager.LoadScene(0);
-                }
+                ReturnToTitle();
             });
         }
-        else if (nextScene.buildIndex == 2)
+        else
         {
-            SetLeftPos();
-            returnButton.onClick.AddListener(() => SceneManager.LoadScene(0));
+            ReturnToTitle();
         }
+    }
+
+
+    public void ReturnToTitle()
+    {
+        SceneManager.LoadScene("TitleScene");
     }
 
     public void OnExitButtonClicked()
@@ -83,9 +48,12 @@ public class ExitManager : Singleton<ExitManager>
         // ビルド版の場合はアプリケーション終了
         if (FindFirstObjectByType<NetworkRunner>())
         {
-            if (FindFirstObjectByType<NetworkRunner>().GameMode  != GameMode.Single)
+            if (InGame)
             {
-                exitPanelAnimation.Play(panelFadeIn);
+                PopupUI.OnVisible("ゲームを終了しますか？", "ゲームへの途中参加は出来ません。", onClose: () =>
+                {
+                    Application.Quit();
+                });
             }
             else
             {
@@ -99,22 +67,6 @@ public class ExitManager : Singleton<ExitManager>
 #endif
     }
 
-    public void OnReturnButtonDecide(bool yes)
-    {
-        returnPanelAnimation.Play(panelFadeOut);
-        if (yes)
-        {
-            FindFirstObjectByType<NetworkRunner>().Shutdown();
-            SceneManager.LoadScene(0);
-        }
-    }
 
-    public void OnExitButtonDecide(bool yes)
-    {
-        exitPanelAnimation.Play(panelFadeOut);
-        if (yes)
-        {
-            Application.Quit();
-        }
-    }
+    bool InGame => FindFirstObjectByType<NetworkRunner>()?.GameMode != GameMode.Single && GameManager.Instance != null && (GameManager.State.Current != GameState.EGameState.Pregame && GameManager.State.Current != GameState.EGameState.Off);
 }

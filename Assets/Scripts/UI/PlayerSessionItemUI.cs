@@ -115,7 +115,9 @@ public class PlayerSessionItemUI : NetworkBehaviour
 			//観戦者の数などを更新
 			var whitePlayerCount = PlayerRegistry.Players.Count(p => p.IsWhite && p.TeamIndex != 255);
 			var redPlayerCount = PlayerRegistry.Players.Count(p => !p.IsWhite && p.TeamIndex != 255);
-			var spectatorCount = PlayerRegistry.Everyone.Count(p => p.IsSpectator);
+			var nonSelectedCount = PlayerRegistry.Players.Count(p => p.TeamIndex == 255);
+			var spectatorCount = PlayerRegistry.Everyone.Count() - whitePlayerCount - redPlayerCount - nonSelectedCount;
+			Debug.Log($"White: {whitePlayerCount}, Red: {redPlayerCount}, Spectator: {spectatorCount}");
 			InterfaceManager.Instance.sessionScreen.spectatorCountText.text = spectatorCount.ToString();
 			if (Runner.IsServer)
 			{

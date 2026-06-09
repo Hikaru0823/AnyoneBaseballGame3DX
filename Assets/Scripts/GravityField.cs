@@ -17,6 +17,7 @@ public class GravityField : PlayerController
     [SerializeField] private RawImage targetImage; // ターゲットのRawImage
     [SerializeField] private TextMeshProUGUI targetText; // ターゲットのTextMeshProUGUI
     [SerializeField] private GameObject particle; // 力を及ぼす範囲の半径
+    //[SerializeField] private MeshRenderer meshRenderer; // 力を及ぼす範囲のMeshRenderer
 
     // スケール変化のパラメータ
     [SerializeField] private float scaleAmplitude = 0.08f;   // 変化幅
@@ -26,8 +27,6 @@ public class GravityField : PlayerController
 
     private bool isScaling = false; // スケール変化中かどうか
     
-
-    private bool isActive = false;
     private float time = 0f; // 時間計測用
 
     public override void Spawned()

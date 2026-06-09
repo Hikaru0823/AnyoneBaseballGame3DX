@@ -55,4 +55,26 @@ public class InterfaceManager : MonoBehaviour
             targetPanel.Play(ResourcesManager.PANEL_OUT);
         }
     }
+
+    public void OnReturnButtonClicked()
+    {
+        switch(LobbyManager.Instance.CurrentState)
+        {
+            case LobbyManager.State.RoomSelect:
+                ExitManager.Instance.OnReturnButtonClicked();
+                break;
+            case LobbyManager.State.TeamSelect:
+                ExitManager.Instance.OnReturnButtonClicked();
+                break;
+            case LobbyManager.State.InSession:
+                PlayerObject.Local.Rpc_TReTeamSelect();
+                teamSelectAnimator.Play(ResourcesManager.PANEL_IN);
+                sessionScreenAnimator.Play(ResourcesManager.PANEL_OUT);
+                LobbyManager.Instance.CurrentState = LobbyManager.State.TeamSelect;
+                break;
+            case LobbyManager.State.InGame:
+                ExitManager.Instance.OnReturnButtonClicked();
+                break;
+        }
+    }
 }

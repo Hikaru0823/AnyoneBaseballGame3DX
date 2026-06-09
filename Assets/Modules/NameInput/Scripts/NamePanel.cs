@@ -14,12 +14,14 @@ using Fusion;
 public class NamePanel : MonoBehaviour
 {
     private List<string[]> ALPHABET_LOWER = new List<string[]>() {
+        new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
         new string[] { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" },
         new string[] { "a", "s", "d", "f", "g", "h", "j", "k", "l" },
         new string[] { "z", "x", "c", "v", "b", "n", "m", "-" }
     };
 
     private List<string[]> ALPHABET_UPPER = new List<string[]>() {
+        new string[] { "!", "\"", "#", "$", "%", "&", "'", "(", ")", "=" },
         new string[] { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" },
         new string[] { "A", "S", "D", "F", "G", "H", "J", "K", "L" },
         new string[] { "Z", "X", "C", "V", "B", "N", "M", "-" }

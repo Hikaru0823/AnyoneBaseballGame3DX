@@ -12,16 +12,22 @@ using Unity.VisualScripting;
 using System.Linq;
 using ExitGames.Client.Photon.StructWrapping;
 using KanKikuchi.AudioManager;
+using EyeMoT.Fusion;
 
 public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
 {
     public static LobbyManager Instance;
+    public enum State{
+        RoomSelect,
+        TeamSelect,
+        InSession,
+        InGame,
+    }
+    public State CurrentState { get; set; }
     [SerializeField] NetworkRunner runnerPrefab;
 	[SerializeField] NetworkObject managerPrefab;
-    [SerializeField] private FixedSessionInfo[] sessionInfos;
-    [SerializeField] private SessionItemUI sessionItemPrefab;
-    [SerializeField] private Transform sessionItemHolder;
-    readonly List<SessionItemUI> sessionItems = new List<SessionItemUI>();
+    [SerializeField] private SessionListView _sessionListView;
+    [SerializeField] public SessionHolder SessionHolder;
 
 
     public new NetworkRunner  Runner { get; private set; }
@@ -30,12 +36,16 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        SessionHolder.init();
     }
 
     void Start()
     {
-        if(ResourcesManager.Instance.CurrentMode != GameManager.EMode.Online_BarrierFree)
+        if(ResourcesManager.Instance.CurrentMode != GameManager.EMode.Online_BarrierFree && ResourcesManager.Instance.CurrentMode != GameManager.EMode.Online_Universal)
+        {
+            CurrentState = State.InGame;
             StartCoroutine(SingleSessionRoutine());
+        }
         else
             TryJoinLobby();
     }
@@ -106,12 +116,32 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
         if (result.Ok)
         {
             Debug.Log("Connected to lobby.");
+            CurrentState = State.RoomSelect;
             InterfaceManager.Instance.lobbyAnimator.Play(ResourcesManager.PANEL_IN);
         }
         else
         {
             DisconnectUI.OnShutdown(result.ShutdownReason);
         }
+    }
+
+    //UI hook
+    public void CreateHostSession()
+    {
+        SessionDef.Name? availableSession = GetAvailableSessionName();
+        if (!availableSession.HasValue)
+        {
+            PopupUI.OnVisible("空きルームがありません", "利用可能なルーム名がすべて使用中です。");
+            return;
+        }
+
+        SessionHolder.TryGet(availableSession.Value, out SessionData data);
+        var sessionCode = SessionCodeUtility.BuildSessionCode(data.Name);
+        var description = $"ホストとしてルーム<color=green>「{data.UIName}」</color>を作成します。\nホストがゲーム終了するとルームも閉じます。";
+        PopupUI.OnVisible($"ルームを作成しますか？", description, data.Sprite, onClose: () =>
+        {
+            TryHostSession(sessionCode);
+        });
     }
 
     public void TryHostSession(string sessionCode = null, System.Action successCallback = null)
@@ -141,7 +171,7 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
 		Dictionary<string, SessionProperty> customProperties = new Dictionary<string, SessionProperty>
 		{
 			// 例: 最大プレイヤー数を設定
-			{ "MaxPlayers", 6 },
+			{ "MaxPlayers", 20 },
             { "WhitePlayers", 0 },
             { "RedPlayers", 0 },
 			{ "SpectatorPlayers", 0 },
@@ -153,7 +183,7 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
 			GameMode = GameMode.Host,
 			SessionName = code,
 			SceneManager = Runner.GetComponent<INetworkSceneManager>(),
-			PlayerCount = 10,
+			PlayerCount = 20,
 			SessionProperties = customProperties  // カスタムプロパティを設定
 		});
 		
@@ -168,12 +198,13 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
 			Debug.Log($"Connected to Session {code} by Host with custom properties.");
 			InterfaceManager.Instance.lobbyAnimator.Play(ResourcesManager.PANEL_OUT);
             InterfaceManager.Instance.teamSelectAnimator.Play(ResourcesManager.PANEL_IN);
+			CurrentState = State.TeamSelect;
 			if (successCallback != null)
                 successCallback.Invoke();
 		}
 		else
 		{
-			//DisconnectUI.OnShutdown(result.ShutdownReason);
+			DisconnectUI.OnShutdown(result.ShutdownReason);
 		}
 	}
 
@@ -206,46 +237,32 @@ public class LobbyManager : SimulationBehaviour, INetworkRunnerCallbacks
         {
             InterfaceManager.Instance.lobbyAnimator.Play(ResourcesManager.PANEL_OUT);
             InterfaceManager.Instance.teamSelectAnimator.Play(ResourcesManager.PANEL_IN);
+            CurrentState = State.TeamSelect;
             if (successCallback != null)
                 successCallback.Invoke();
         }
         else
         {
-            //DisconnectUI.OnShutdown(result.ShutdownReason);
+            DisconnectUI.OnShutdown(result.ShutdownReason);
         }
     }
 
     //ロビー内セッションの人数処理
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
-        for (int i = 0; i < sessionInfos.Length; i++)
-        {
-            SessionInfo sessionInfo = sessionList.FirstOrDefault(item => item.Name == sessionInfos[i].Name) ?? null;
-            if (sessionInfo != null)
-            {
-                GetSessionItem(sessionInfo.Name).Init(sessionInfo.Name, sessionInfo.PlayerCount, sessionInfo.IsOpen);
-            }
-            else
-                GetSessionItem(sessionInfos[i].Name).Init(sessionInfos[i].Name, 0, true);
-        }
+        _sessionListView.UpdateSessions(sessionList);
     }
-
-    SessionItemUI TrackItem(SessionItemUI item)
-	{
-		sessionItems.Add(item);
-		return item;
-	}
-
-	SessionItemUI GetSessionItem(string sessionname)
-	{
-		return sessionItems.FirstOrDefault(item => item.sessionName == sessionname) ?? TrackItem(Instantiate(sessionItemPrefab, sessionItemHolder));
-	}
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.Log($"LobbyManager.OnShutdown: {shutdownReason}");
         Runner = null;
         DisconnectUI.OnShutdown(shutdownReason);
+    }
+
+    SessionDef.Name? GetAvailableSessionName()
+    {
+        return _sessionListView != null ? _sessionListView.GetAvailableSessionName() : null;
     }
 
     #region NetworkCallBacks

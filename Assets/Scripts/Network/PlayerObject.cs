@@ -165,6 +165,12 @@ public class PlayerObject : NetworkBehaviour
 		}
 	}
 
+	[Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void Rpc_TReTeamSelect()
+    {
+        TeamIndex = 255;
+	}
+
 	[Rpc(RpcSources.All, RpcTargets.InputAuthority)]
 	public void Rpc_SendImage()
 	{
@@ -179,6 +185,8 @@ public class PlayerObject : NetworkBehaviour
 
 	void TeamChanged()
 	{
+		if(TeamIndex == 255) return;
+		Debug.Log("Team changed");
 		OnTeamChanged?.Invoke();
 	}
 }
